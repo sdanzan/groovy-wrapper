@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/*
+ * Original script at http://groovy.codehaus.org/WrappingGroovyScript
+ */
+
 /**
  * Wrap a script and groovy jars to an executable jar
  */

@@ -12,7 +12,7 @@ Syntax is the same as the original script, plus two more options:
   excluded jars
 
 **Example:** `groovy GroovyWrapper.groovy -m Hello -c -i pretty-print.jar
-colors.jar -x 'META-INF/*.DSA'` will produce a Hello.jar including all the
-content of pretty-print.jar and colors.jar except for files matching the
+colors.jar -x 'META-INF/*.DSA'` will produce a `Hello.jar` including all the
+content of `pretty-print.jar` and `colors.jar` except for files matching the
 pattern `META-INF/*.DSA` (ie. `.DSA` files in the `META-INF` directory of those
 jars)

@@ -26,6 +26,8 @@ cli.h( longOpt: 'help', required: false, 'show usage information' )
 cli.d( longOpt: 'destfile', argName: 'destfile', required: false, args: 1, 'jar destination filename, defaults to {mainclass}.jar' )
 cli.m( longOpt: 'mainclass', argName: 'mainclass', required: true, args: 1, 'fully qualified main class, eg. HelloWorld' )
 cli.c( longOpt: 'groovyc', required: false, 'Run groovyc' )
+cli.i( longOpt: 'include', required: false, args: 1764, valueSeparator: ' ' as char, 'a list of jars to include into the destination jar' )
+cli.x( longOpt: 'exclude', required: false, args: 1764, valueSeparator: ' ' as char, 'a list of file patterns to exclude from included jars' )
 
 //--------------------------------------------------------------------------
 def opt = cli.parse(args)
@@ -66,15 +68,21 @@ def supJars = []
 ant.jar( destfile: destFile, compress: true, index: true ) {
   fileset( dir: '.', includes: scriptBase + '*.class' )
 
+  // Embedded Groovy jars
   zipgroupfileset( dir: GROOVY_HOME, includes: 'embeddable/groovy-all-*.jar' )
   zipgroupfileset( dir: GROOVY_HOME, includes: 'lib/commons*.jar' )
 
-  // add more jars here
-  opt.arguments().each {
+  // Other jars to include from -i option
+  opt.is().each {
     if (it.endsWith( '.jar' )) {
       jarFile = new File( it )
-      zipgroupfileset( dir: jarFile.getParent(), includes: jarFile.getName() )
-      supJars << jarFile.getName()
+      zipfileset( src: it ) {
+        // exclude patterns from -x option
+        opt.xs.each {
+          exclude( name: it )
+        }
+      }
+      supJars << new File( it ).getName()
     }
   }
 

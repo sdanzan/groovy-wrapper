@@ -73,7 +73,7 @@ ant.jar( destfile: destFile, compress: true, index: true ) {
   zipgroupfileset( dir: GROOVY_HOME, includes: 'lib/commons*.jar' )
 
   // Other jars to include from -i option
-  opt.is().each {
+  opt.is.each {
     if (it.endsWith( '.jar' )) {
       jarFile = new File( it )
       zipfileset( src: it ) {

@@ -66,7 +66,9 @@ if (!GROOVY_HOME.canRead()) {
 def supJars = []
 
 ant.jar( destfile: destFile, compress: true, index: true ) {
-  fileset( dir: '.', includes: scriptBase + '*.class' )
+  classes = new File( scriptBase ).getParent() + '/*.class'
+  if ( classes.startsWith( '/' ) ) classes = '*.class'
+  fileset( dir: '.', includes: classes )
 
   // Embedded Groovy jars
   zipgroupfileset( dir: GROOVY_HOME, includes: 'embeddable/groovy-all-*.jar' )

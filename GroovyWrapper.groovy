@@ -1,31 +1,25 @@
 /**
-* from https://github.com/sdanzan/groovy-wrapper/blob/master/GroovyWrapper.groovy
-*
-* Ryan: missing features: if i missing, blows up in args
-* also, doesn't appear to add main class
- *
- *
 * Copyright 2002-2007 the original author or authors.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
-        * You may obtain a copy of the License at
+* You may obtain a copy of the License at
 *
 *      http://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-        * See the License for the specific language governing permissions and
+* See the License for the specific language governing permissions and
 * limitations under the License.
-        */
+*/
 
 /*
-        * Original script at http://groovy.codehaus.org/WrappingGroovyScript
+* Original script at http://groovy.codehaus.org/WrappingGroovyScript
 */
 
 /**
-        * Wrap a script and groovy jars to an executable jar
+* Wrap a script and groovy jars to an executable jar
 */
 def cli = new CliBuilder()
 cli.h( longOpt: 'help', required: false, 'show usage information' )
@@ -65,9 +59,14 @@ if (opt.c) {
 }
 
 def GROOVY_HOME = new File( System.getenv('GROOVY_HOME') )
-def HOME = new File(System.getenv('HOME'))
 if (!GROOVY_HOME.canRead() || GROOVY_HOME == "") {
     ant.echo( "Missing environment variable GROOVY_HOME: '${GROOVY_HOME}'" )
+    return
+}
+
+def HOME = new File(System.getProperty("user.home"))
+if (!HOME.canRead() || HOME == "") {
+    ant.echo( "Missing home directory(lib and grapes): '${HOME}'" )
     return
 }
 

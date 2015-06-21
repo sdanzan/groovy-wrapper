@@ -87,18 +87,11 @@ ant.jar( destfile: destFile, compress: true, index: true ) {
     if (opt.g) {
         // Selective Grap (doesn't do dependencies, but good enough). Generally the @Grab will be commented out when compiling to jar
         sfLines = scriptFile.readLines()
-        for (a in sfLines) {
-            if (a.contains("@Grab")) {
-                s = a.indexOf("(")
-                e = a.indexOf(")")
-                c = a.substring(s, e + 1)
-                c = c.replace("(", "").replace(")", "").replace('"', "").replace("'", "") // stripping
-                g = c.split(":") // this is what I want to get from the grapes dir
-                j = "${g[0]}/${g[1]}/jars/${g[1]}-${g[2]}.jar"
-                grapes.add(j)
-                zipgroupfileset(dir: new File(HOME, ".groovy/grapes"), includes: "${g[0]}/${g[1]}/jars/${g[1]}-${g[2]}.jar")
-
-            }
+        grapesLines = extractGrapes(sfLines)
+        grapesLines.each { g ->
+            j = "${g[0]}/${g[1]}/jars/${g[1]}-${g[2]}.jar"
+            grapes.add(j)
+            zipgroupfileset(dir: new File(HOME, ".groovy/grapes"), includes: "${g[0]}/${g[1]}/jars/${g[1]}-${g[2]}.jar")
         }
     }
     if (opt.l) {
@@ -142,3 +135,30 @@ libs.each{
     ant.echo("Added jar from lib: $it")
 }
 ant.echo( "Run script using: \'java -jar ${destFile} ...\'" )
+
+def extractGrapes(sfLines) {
+    def results = []
+    for (a in sfLines) {
+        if (a.contains("@Grab(")) {
+            s = a.indexOf("(")
+            e = a.indexOf(")")
+            c = a.substring(s, e + 1)
+            c = c.replaceAll(/\s+/, '') // make simpler next parsing
+            def patterns = [/\(group='(.*)',module='(.*)',version='(.*)'\)/,
+                            /\(['"](.*):(.*):(.*)['"]\)/]
+            m = patterns.findResult {
+                def r = c =~ it
+                if (r)
+                    return r
+            }
+
+            if (m?.matches()) {
+                results.add([m.group(1), m.group(2), m.group(3)])
+            } else {
+                throw new IllegalArgumentException("Error parsing Grab statement: `$c`")
+            }
+        }
+    }
+
+    results
+}

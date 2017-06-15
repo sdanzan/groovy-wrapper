@@ -39,7 +39,7 @@ if (opt.h) {
 }
 
 def mainClass = opt.m
-def scriptBase = mainClass.replace( '.', '/' )
+def scriptBase = mainClass.replace('.groovy', '').replace( '.', '/' )
 def scriptFile = new File( scriptBase + '.groovy' )
 if (!scriptFile.canRead()) {
     println "Cannot read script file: '${scriptFile}'"
